@@ -1,4 +1,5 @@
 import os
+import time
 
 import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, session
@@ -18,20 +19,39 @@ def get_db_connection():
 
 
 def init_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    max_retries = 10
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            username VARCHAR(50) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
-        )
-    """)
+    for attempt in range(1, max_retries + 1):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(50) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL
+                )
+            """)
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            print("Database connection successful.")
+            return
+
+        except psycopg2.OperationalError as error:
+            print(
+                f"Database belum siap. "
+                f"Percobaan {attempt}/{max_retries}..."
+            )
+
+            if attempt == max_retries:
+                print("Gagal terhubung ke database.")
+                raise error
+
+            time.sleep(2)
 
 
 @app.route("/")
