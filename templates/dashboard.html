@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Python Login Service</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Dashboard</h1>
+
+        <p class="welcome">
+            Welcome, <strong>{{ username }}</strong>!
+        </p>
+
+        <p>
+            You are successfully logged in.
+        </p>
+
+        <div class="status">
+            Application is running successfully.
+        </div>
+
+        <a href="{{ url_for('logout') }}">
+            <button>
+                Logout
+            </button>
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
