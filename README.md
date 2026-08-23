@@ -1,146 +1,104 @@
-﻿# Login Service Flask + PostgreSQL
+﻿# Clue Dockerfile
 
-Aplikasi sederhana autentikasi user (register, login, dashboard, logout) menggunakan Flask dan PostgreSQL.
+Buat file bernama `Dockerfile`.
 
-## Fitur
-
-- Register user baru (password di-hash dengan Werkzeug)
-- Login dan session-based authentication
-- Halaman dashboard untuk user yang sudah login
-- Endpoint health check ke database
-
-## Stack
-
-- Python 3.11
-- Flask
-- PostgreSQL 15
-- psycopg2-binary
-
-## Struktur Project
-
-```text
-.
-|-- app.py
-|-- requirements.txt
-|-- static/
-|   `-- style.css
-`-- templates/
-    |-- dashboard.html
-    |-- login.html
-    `-- register.html
-```
-
-## Menjalankan Secara Lokal
-
-### 1. Install dependency
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Siapkan environment variable
-
-PowerShell:
-
-```powershell
-$env:SECRET_KEY="ganti-dengan-secret-aman"
-$env:DATABASE_URL="postgresql://postgres:postgres@localhost:5432/login_db"
-```
-
-### 3. Jalankan aplikasi
-
-```bash
-python app.py
-```
-
-Aplikasi berjalan di `http://localhost:5000`.
-
-## Endpoint
-
-- `GET /` redirect ke login/dashboard sesuai session
-- `GET|POST /register` registrasi user
-- `GET|POST /login` login user
-- `GET /dashboard` halaman setelah login
-- `GET /logout` logout user
-- `GET /health` cek koneksi aplikasi ke database
-
-## Dockerfile (Lengkap)
-
-Buat file bernama `Dockerfile` dengan isi berikut:
+Gunakan Dockerfile instruction berikut dan lengkapi bagian yang kosong:
 
 ```dockerfile
 # Base Image Python
-FROM python:3.11-slim
+FROM ___
 
 # Install package pendukung PostgreSQL
-RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev gcc && rm -rf /var/lib/apt/lists/*
+RUN ___
 
 # Tentukan working directory
 WORKDIR /app
 
 # Copy source code aplikasi
-COPY . .
+COPY ___
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN ___
 
 # Expose aplikasi
-EXPOSE 5000
+EXPOSE ___
 
 # Jalankan aplikasi
-CMD ["python", "app.py"]
+CMD ["___", "___"]
 ```
 
-## Docker Compose (Lengkap)
+## Petunjuk
 
-Buat file bernama `compose.yaml` dengan isi berikut:
+- Gunakan Python versi `3.11-slim`.
+- Install package `libpq-dev` dan `gcc`.
+- Gunakan `requirements.txt` untuk dependency Python.
+- Aplikasi berjalan pada port `5000`.
+- Aplikasi dijalankan menggunakan `python app.py`.
+
+# Clue Docker Compose
+
+Buat file bernama `compose.yaml`.
+
+Docker Compose harus memiliki **2 services**:
+
+- Aplikasi
+- PostgreSQL
+
+Lengkapi bagian yang kosong:
 
 ```yaml
 services:
+
   # PostgreSQL Database
   db:
-    image: postgres:15
-    container_name: db
+    image: ___
+    container_name: ___
+
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: login_db
+      POSTGRES_USER: ___
+      POSTGRES_PASSWORD: ___
+      POSTGRES_DB: ___
+
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ___:/var/lib/postgresql/data
+
     networks:
-      - app-network
+      - ___
 
   # Python Application
   aplikasi:
-    build: .
-    container_name: login-service
+    build: ___
+    container_name: ___
+
     ports:
-      - "8098:5000"
+      - "8098:___"
+
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/login_db
-      SECRET_KEY: dev-secret-key
-    depends_on:
-      - db
+      DATABASE_URL: postgresql://USERNAME_DATABASE:PASSWORD_DATABASE@DNS_DB:5432/NAMA_DATABASE
+
     networks:
-      - app-network
+      - ___
 
 networks:
-  app-network:
+  ___:
     driver: bridge
 
 volumes:
-  db_data:
+  ___:
 ```
 
-## Menjalankan dengan Docker Compose
+## Petunjuk
 
-```bash
-docker compose up --build -d
-```
-
-Akses aplikasi di `http://localhost:8098`.
-
-## Catatan
-
-- Untuk production, ganti `SECRET_KEY` dan credential database.
-- Endpoint `/health` akan gagal jika database belum siap menerima koneksi.
+- Gunakan PostgreSQL versi `15`.
+- Nama container aplikasi: `login-service`.
+- Nama container database: `db`.
+- Aplikasi menggunakan port container `5000`.
+- Aplikasi dapat diakses melalui port host `8098`.
+- Aplikasi dan database harus berada pada network yang sama.
+- Gunakan named volume untuk database.
+- Mount volume ke `/var/lib/postgresql/data`.
+- Gunakan environment variable:
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `DATABASE_URL` harus menggunakan nama service database sebagai hostname.
